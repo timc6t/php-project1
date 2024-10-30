@@ -62,11 +62,11 @@
         }
     ?>
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
-        <label for="user">User: </label>
-        <input value="<?php if(isset($user)) echo $user; ?>" id="user" name="user" type="text" placeholder="Email" required>
+        <label for="user">User: </label><br>
+        <input value="<?php if(isset($user)) echo $user; ?>" id="user" name="user" type="text" placeholder="Email" required><br><br>
 
-        <label for="password">Password: </label>
-        <input id="password" name="password" type="password" placeholder="Password" required>
+        <label for="password">Password: </label><br>
+        <input id="password" name="password" type="password" placeholder="Password" required><br><br>
 
         <button type="submit">Login</button>
     </form>
