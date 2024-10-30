@@ -1,5 +1,18 @@
 <?php
-    session_start(); //It has been moved here due to it being undefined in the else block.
+/**
+ * User login script
+ * 
+ * This script handles user login by checking the provided email and password against the
+ * database. It initiates a session to store user information upon successful login and
+ * redirects to the header page. If the login fails, appropiate error messages are displayed.
+ * 
+ * @throws PDOException If there is an error connecting to the database or executing the
+ * query.
+ * @throws InvalidArgumentException If the configuration file is invalid or cannot be loaded.
+ */
+
+    session_start(); 
+    /* session_start() has been moved here due to it being undefined in the else block. */
     require_once 'db_config.php';
 
     if($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -10,7 +23,6 @@
                 $err = true;
                 $user = $_POST['user'];
             } else {
-                //session_start()
                 $_SESSION['user'] = $usu;
                 header("Location: header.php");
                 exit;
@@ -32,10 +44,9 @@
 </head>
 <body>
     <h1>Login</h1>
-    <!--PHP redirection-->
     <?php
     /**
-     * When the user has logged out, it redirects to this with the message that is between the <p> tags.
+     * Displays a message if the user was redirected after logging out.
      */
         if(isset($_GET["redirected"])) {
             echo "<p>Login to continue</p>";
@@ -44,7 +55,7 @@
 
     <?php
         /**
-         * If nothing has been typed into the inputs and the user clicks on Login, it will ask the user to check their email and password
+         * Displays an error message if the login attempt fails.
          */
         if(isset($err) and $err == TRUE) {
             echo "<p>Check user and password</p>";
