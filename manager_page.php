@@ -15,12 +15,12 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Admin zone</title>	
+		<title>Expenses</title>	
 		<meta charset = "UTF-8">
 	</head>
 	<body>	
-		<p> Admin zone </p>
-		<?php echo "Welcome admin".$_SESSION['user']['name'];?>
-		<br><a href = "activity_3_5_sessions1_logout.php"> Logout <a>
+		<p> Expense manager zone </p>
+		<?php echo "Welcome manager" . $_SESSION['user']['name'];?>
+		<br><a href="logout.php"> Logout <a>
 	</body>
 </html>
