@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-10-2024 a las 20:44:29
+-- Tiempo de generación: 30-10-2024 a las 20:53:12
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `employee_expenses`
 --
+CREATE DATABASE IF NOT EXISTS `employee_expenses` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `employee_expenses`;
 
 -- --------------------------------------------------------
 
@@ -27,6 +29,7 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `user_name` varchar(255) NOT NULL,
@@ -39,9 +42,8 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_name`, `user_password`, `user_role`, `email`) VALUES
-(1, 'default_manager', 'password123', 1, 'manager@falseexample.com'),
-(2, 'default_employee', 'password1234', 0, 'employee1@falseexample.com');
+INSERT INTO `users` (`user_id`, `user_name`, `user_password`, `user_role`, `email`) VALUES(1, 'default_manager', 'password123', 1, 'manager@falseexample.com');
+INSERT INTO `users` (`user_id`, `user_name`, `user_password`, `user_role`, `email`) VALUES(2, 'default_employee', 'password1234', 0, 'employee1@falseexample.com');
 
 --
 -- Índices para tablas volcadas
