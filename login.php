@@ -34,14 +34,18 @@
     <h1>Login</h1>
     <!--PHP redirection-->
     <?php
-        // When the user has logged out, it redirects to this with the following message:
+    /**
+     * When the user has logged out, it redirects to this with the message that is between the <p> tags.
+     */
         if(isset($_GET["redirected"])) {
             echo "<p>Login to continue</p>";
         }
     ?>
 
     <?php
-        // If nothing has been typed into the inputs and the user clicks on Login, it will ask the user to check their email and password
+        /**
+         * If nothing has been typed into the inputs and the user clicks on Login, it will ask the user to check their email and password
+         */
         if(isset($err) and $err == TRUE) {
             echo "<p>Check user and password</p>";
         }
