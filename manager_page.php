@@ -8,7 +8,6 @@
 			header("Location: main.php?redirected=true");
 			return;
 		}
-		
 	}	
 	
 ?>
