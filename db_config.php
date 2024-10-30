@@ -19,3 +19,22 @@ function load_config($name, $schema){
 	$result[] = $password[0];
 	return $result;
 }
+
+function check_user($email, $password) {
+	$result = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
+
+	$db = new PDO($result[0], $result[1], $result[2]);
+	$prepared = $db -> prepare("SELECT user_id, email, user_password FROM users WHERE email = ?");
+	$prepared -> execute([$email]);
+
+	$user = $prepared -> fetch(PDO::FETCH_ASSOC);
+
+	if ($user && password_verify($password, $user['user_password'])) {
+		return [
+			'user_id' => $user['user_id'],
+			'email' => $user['email']
+		];
+	} else {
+		return false;
+	}
+}
