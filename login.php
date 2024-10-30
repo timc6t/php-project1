@@ -45,9 +45,9 @@
 <body>
     <h1>Login</h1>
     <?php
-    /**
-     * Displays a message if the user was redirected after logging out.
-     */
+        /**
+         * Displays a message if the user was redirected after logging out.
+         */
         if(isset($_GET["redirected"])) {
             echo "<p>Login to continue</p>";
         }
