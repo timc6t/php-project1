@@ -17,7 +17,7 @@
 
     if($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
-            $usu == check_user($_POST['user'], $_POST['user_password']);
+            $usu = check_user($_POST['user'], $_POST['user_password']);
 
             if (!$usu) {
                 $err = true;
@@ -65,8 +65,8 @@
         <label for="user">User: </label><br>
         <input value="<?php if(isset($user)) echo $user; ?>" id="user" name="user" type="text" placeholder="Email" required><br><br>
 
-        <label for="password">Password: </label><br>
-        <input id="password" name="password" type="password" placeholder="Password" required><br><br>
+        <label for="user_password">Password: </label><br>
+        <input id="user_password" name="user_password" type="password" placeholder="Password" required><br><br>
 
         <button type="submit">Login</button>
     </form>

@@ -34,7 +34,7 @@
 	$name = $data -> xpath("//name");
 	$user = $data -> xpath("//user");
 	$password = $data -> xpath("//password");	
-	$db_connection = sprintf("mysql:dbname=%s;host=%s", $name[0], $ip[0]);
+	$db_connection = sprintf("mysql:dbname=employee_expenses;host=127.0.0.1", $name[0], $ip[0]);
 	$result = [];
 	$result[] = $db_connection;
 	$result[] = $user[0];
@@ -68,6 +68,37 @@ function check_user($email, $password) {
 			'email' => $user['email']
 		];
 	} else {
+		return false;
+	}
+}
+
+function add_expense($user_id, $date, $amount, $description, $category) {
+	try {
+		// Option 1 (should be out of the try block)
+		$result = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
+
+		$db = new PDO($result[0], $result[1], $result[2]);
+		$db -> beginTransaction();
+		$hour = date("d-m-Y H:i:s", time());
+		$prepared = $db -> prepare("INSERT INTO expenses (user_id, date, amount, description, category) VALUES (?, ?, ?, ?, ?)");
+		
+		//$prepared -> execute(array($hour, $user_id));
+
+		if (!$prepared) {
+			return FALSE;
+		}
+
+		// Option 2: The one given by ChatGPT:
+		$stmt = $db -> prepare("INSERT INTO expenses (user_id, date, amount, description, category) VALUES (:employee_id, :date, :amount, :description, :category)");
+		$stmt->bindParam(':employee_id', $employee_id, PDO::PARAM_INT);
+        $stmt->bindParam(':date', $date, PDO::PARAM_STR);
+        $stmt->bindParam(':amount', $amount, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+
+		return $stmt -> execute();
+	} catch (PDOException $e) {
+		echo "Database error: " . $e -> getMessage();
 		return false;
 	}
 }
