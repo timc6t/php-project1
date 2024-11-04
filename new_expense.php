@@ -1,4 +1,5 @@
 <?php
+// MUST BE EDITED LATER. IT IS NOT COMPLETE.
 require_once 'db_config.php';
 
 $message = '';
