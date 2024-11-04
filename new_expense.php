@@ -33,6 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Add New Expense</title>
 </head>
 <body>
+    <?php
+        require 'header.php';
+    ?>
     <h1>Add New Expense</h1>
 
     <?php if ($message): ?>
