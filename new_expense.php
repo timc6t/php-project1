@@ -1,8 +1,6 @@
 <?php
-// MUST BE EDITED LATER. IT IS NOT COMPLETE.
-require_once 'db_config.php';
-
-$message = '';
+require_once 'sessions.php';
+require 'db_config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Retrieve form data and sanitize it

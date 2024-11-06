@@ -57,8 +57,8 @@ function check_user($email, $password) {
 	$result = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
 
 	$db = new PDO($result[0], $result[1], $result[2]);
-	$prepared = $db -> prepare("SELECT user_id, email, user_password FROM users WHERE email = ?");
-	$prepared -> execute([$email]);
+	$prepared = $db -> prepare("SELECT user_id, email, user_password FROM users WHERE email = ? AND user_password = ?");
+	$prepared -> execute([$email, $password]);
 
 	$user = $prepared -> fetch(PDO::FETCH_ASSOC);
 

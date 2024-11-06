@@ -61,6 +61,7 @@
             echo "<p>Check user and password</p>";
         }
     ?>
+    
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
         <label for="user">User: </label><br>
         <input value="<?php if(isset($user)) echo $user; ?>" id="user" name="user" type="text" placeholder="Email" required><br><br>
