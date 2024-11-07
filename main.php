@@ -2,6 +2,8 @@
     require 'sessions.php';
     require_once 'db_config.php';
     check_session();
+
+    $user = $_SESSION['user'];
 ?>
 
 <!DOCTYPE html>

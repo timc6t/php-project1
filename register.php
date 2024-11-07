@@ -9,10 +9,11 @@
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
         try {
-            $db = new PDO($result[0], $result[1], $result[2]);
-            //$db = new PDO($dns, $username, $password);
+            //$db = new PDO($result[0], $result[1], $result[2]);
+            list($dsn, $user, $db_password) = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
+            $db = new PDO($dsn, $user);
             $prepared = $db -> prepare("INSERT INTO users (email, user_password) VALUES (?, ?)");
-            $prepared -> execute([$email, $password]);
+            $prepared -> execute([$email, $hashed_password]);
 
             echo "Registration successful!";
         } catch(PDOException $e) {
@@ -35,10 +36,11 @@
         <label for="email">Email: </label><br>
         <input type="email" id="email" name="email" required><br><br>
 
-        <label for="password">Email: </label><br>
+        <label for="password">Password: </label><br>
         <input type="password" id="password" name="password" required><br><br>
 
         <input type="submit" value="Register">
     </form>
+    <p>Already have an account? <a href="login.php">Login here</a>.</p>
 </body>
 </html>

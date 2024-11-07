@@ -24,7 +24,7 @@
                 $user = $_POST['user'];
             } else {
                 $_SESSION['user'] = $usu;
-                header("Location: header.php");
+                header("Location: main.php");
                 exit;
             }
         } catch (PDOException $e) {
