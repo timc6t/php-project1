@@ -20,7 +20,6 @@
             echo "Error: " . $e -> getMessage();
         }
     }
-
 ?>
 
 <!DOCTYPE html>
