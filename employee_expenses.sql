@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-11-2024 a las 19:28:53
+-- Tiempo de generación: 08-11-2024 a las 17:07:39
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -63,8 +63,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `email`, `user_password`, `user_role`) VALUES
-(1, 'default_manager@company.com', '123456', 0),
-(2, 'default_employee@company.com', '123456', 1);
+(4, 'default_manager@company.com', '$2y$10$P3YORbVee', 0),
+(5, 'default_employee@company.com', '$2y$10$p.s7M2tey', 0);
 
 --
 -- Índices para tablas volcadas
@@ -97,7 +97,7 @@ ALTER TABLE `expenses`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas
