@@ -6,7 +6,9 @@
         $email = $_POST['email'];
         $password = $_POST['password'];
 
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // Añadir la siguiente línea más tarde
+        // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = $password; // Eliminar más tarde
         
         try {
             //$db = new PDO($result[0], $result[1], $result[2]);

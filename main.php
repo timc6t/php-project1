@@ -14,8 +14,8 @@
     <title>Main page</title>
 </head>
 <body>
-    <h1>Welcome, <?php echo htmlspecialchars($user['user_name']) ?></h1>
-    <h2>Your expenses</h2>
+    <?php require 'header.php'; ?>
+    <h1>Your expenses</h1>
 
 <!-- Do a table of the expenses here -->
 

@@ -12,20 +12,23 @@
  */
 
     session_start(); 
-    /* session_start() has been moved here due to it being undefined in the else block. */
+    
     require_once 'db_config.php';
 
     if($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $usu = check_user($_POST['user'], $_POST['user_password']);
 
-            if (!$usu) {
+
+            if ($usu === false) {
                 $err = true;
                 $user = $_POST['user'];
             } else {
-                $_SESSION['user'] = $usu;
-                header("Location: main.php");
-                exit;
+                if ($usu !== false) {
+                    $_SESSION['user_id'] = $usu['user_id'];
+                    header("Location: main.php");
+                    exit;
+                }
             }
         } catch (PDOException $e) {
             echo 'Database error: ' . $e -> getMessage();
@@ -48,18 +51,18 @@
         /**
          * Displays a message if the user was redirected after logging out.
          */
-        if(isset($_GET["redirected"])) {
+        /*if(isset($_GET["redirected"])) {
             echo "<p>Login to continue</p>";
-        }
+        }*/
     ?>
 
     <?php
         /**
          * Displays an error message if the login attempt fails.
          */
-        if(isset($err) and $err == TRUE) {
+        /*if(isset($err) and $err == TRUE) {
             echo "<p>Check user and password</p>";
-        }
+        }*/
     ?>
     
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
