@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-11-2024 a las 17:07:39
+-- Tiempo de generación: 11-11-2024 a las 19:16:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -37,10 +37,6 @@ CREATE TABLE `expenses` (
   `transportation` decimal(10,2) DEFAULT NULL,
   `misc` decimal(10,2) DEFAULT NULL,
   `total` decimal(10,2) DEFAULT NULL,
-  `purpose` varchar(255) DEFAULT NULL,
-  `statement_number` int(11) DEFAULT NULL,
-  `pay_period_from` date DEFAULT NULL,
-  `pay_period_to` date DEFAULT NULL,
   `approved` tinyint(1) DEFAULT 0,
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -54,6 +50,8 @@ CREATE TABLE `expenses` (
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `full_surname` varchar(255) NOT NULL,
   `user_password` varchar(16) NOT NULL,
   `user_role` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -62,9 +60,8 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`user_id`, `email`, `user_password`, `user_role`) VALUES
-(4, 'default_manager@company.com', '$2y$10$P3YORbVee', 0),
-(5, 'default_employee@company.com', '$2y$10$p.s7M2tey', 0);
+INSERT INTO `users` (`user_id`, `email`, `name`, `full_surname`, `user_password`, `user_role`) VALUES
+(0, 'support@it.company.com', 'Admin', 'Support', '12345', 2);
 
 --
 -- Índices para tablas volcadas
@@ -82,22 +79,6 @@ ALTER TABLE `expenses`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`user_id`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `expenses`
---
-ALTER TABLE `expenses`
-  MODIFY `expense_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de la tabla `users`
---
-ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas

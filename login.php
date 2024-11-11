@@ -74,5 +74,6 @@
 
         <button type="submit">Login</button>
     </form>
+    <p>No account yet? Click <a href='register.php'>here</a> in order to get your account.</p>
 </body>
 </html>
