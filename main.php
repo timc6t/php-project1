@@ -15,7 +15,7 @@
     <?php require 'header.php'; ?>
     <h1>Your expenses</h1>
 
-<!-- Do a table of the expenses here -->
+<!-- List here all of the expenses that the employee has -->
 
     <p><a href="new_expense.php">Add a new expense</a></p>
 </body>
