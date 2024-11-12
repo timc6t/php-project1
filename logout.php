@@ -13,7 +13,8 @@
 		<title>Session closed</title>
 	</head>
 	<body>
-		<p>Session is closed</p>
-		<a href = "login.php">Go to login page</a>
+		<?php header("Location:login.php"); ?>
+		<!-- <p>Session is closed</p>
+		<a href = "login.php">Go to login page</a> -->
 	</body>
 </html>
