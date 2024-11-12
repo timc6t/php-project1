@@ -14,7 +14,5 @@
 	</head>
 	<body>
 		<?php header("Location:login.php"); ?>
-		<!-- <p>Session is closed</p>
-		<a href = "login.php">Go to login page</a> -->
 	</body>
 </html>
