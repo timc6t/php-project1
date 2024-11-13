@@ -13,7 +13,7 @@
 
     require_once 'db_config.php';
 
-    if($_SERVER["REQUEST_METHOD"] == "POST") {
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
         try {
             $usu = check_user($_POST['user'], $_POST['user_password']);
 
@@ -21,19 +21,33 @@
                 $err = true;
                 $user = $_POST['user'];
             } else {
-                session_start(); 
+                session_start();
+                // print_r($_SESSION['user']);
+
                 $_SESSION['user'] = $usu;
-                //$_SESSION['user_id']['email'] = $usu['email'];
-                var_dump(($_SESSION['user']['user_role']));
+                // $_SESSION['user_id']['email'] = $usu['email'];
+                // var_dump(($_SESSION['user']['user_role']));
                 
-                if ($_SESSION['user']['user_role'] == 2) {
+                switch ($_SESSION['user']['user_role']) {
+                    case 2:
+                        header("Location: admin.php");
+                        exit;
+                    case 1:
+                        header("Location: manager_page.php");
+                        exit;
+                    default:
+                        header("Location: main.php");
+                        exit;
+                }
+
+                /*if ($_SESSION['user']['user_role'] == 2) {
                     header("Location: admin.php");
                 } elseif ($_SESSION['user']['user_role'] == 1) {
                     header("Location: manager_page.php");
                 } else {
                     header("Location: main.php");
                 }
-                exit;
+                exit;*/
             }
         } catch (PDOException $e) {
             echo 'Database error: ' . $e -> getMessage();
@@ -73,6 +87,7 @@
 
         <button type="submit">Login</button>
     </form>
-    <p>No account yet? Click <a href='register.php'>here</a> in order to get your account.</p>
+    <!-- There is a register.php file for entering new users but normal employees cannot access it -->
+    <!-- <p>No account yet? Click <a href='register.php'>here</a> in order to get your account.</p> -->
 </body>
 </html>

@@ -4,6 +4,8 @@
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = $_POST['email'];
+        $name = $_POST['name'];
+        $full_surname = $_POST['full_surname'];
         $password = $_POST['password'];
 
         // Añadir la siguiente línea más tarde
@@ -14,7 +16,7 @@
             //$db = new PDO($result[0], $result[1], $result[2]);
             list($dsn, $user, $db_password) = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
             $db = new PDO($dsn, $user);
-            $prepared = $db -> prepare("INSERT INTO users (email, name, full_surname,  user_password) VALUES (?, ?, ?, ?, ?)");
+            $prepared = $db -> prepare("INSERT INTO users (email, name, full_surname,  user_password) VALUES (?, ?, ?, ?)");
             $prepared -> execute([$email, $name, $full_surname, $hashed_password]);
 
             echo "Registration successful!";
@@ -47,7 +49,7 @@
         <input type="password" id="password" name="password" required><br><br>
 
         <input type="submit" value="Register">
-    </form>
-    <p>Already have an account? <a href="login.php">Login here</a>.</p>
+    </form><br><br>
+    <a href="login.php">Login here</a>
 </body>
 </html>

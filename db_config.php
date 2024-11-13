@@ -50,6 +50,28 @@ function check_user($email, $password){
 	return FALSE;*/
 }
 
+function add_report() {
+	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+		$user_id = $_POST['user_id'];
+		$category = $_POST['category'];
+		$description = $_POST['description'];
+		$date = $_POST['date'];
+		$amount = $_POST['amount'];
+	
+		if ($user_id && $category && $description && $date && $amount) {
+	
+			if (add_expense($user_id, $category, $description, $date, $amount)) {
+				$message = 'Expense added successfully!';
+			} else {
+				$message = 'Failed to add expense.';
+			}
+	
+		} else {
+			$message = 'Please fill in all required fields.';
+		}
+	}
+}
+
 function get_email() {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_start();

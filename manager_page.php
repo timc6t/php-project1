@@ -1,6 +1,6 @@
 <?php 
 	session_start();
-	if(!isset($_SESSION['user'])){	
+	if($_SESSION['user'] == 1 && $_SESSION['user'] == 2) {	
 		header("Location: login.php?redirected=true");
 		return;
 	}else{
