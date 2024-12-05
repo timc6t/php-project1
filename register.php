@@ -13,23 +13,21 @@
         $hashed_password = $password; // Eliminar más tarde
         
         try {
-            //$db = new PDO($result[0], $result[1], $result[2]);
-            list($dsn, $user, $db_password) = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
+            list($dsn, $user, $db_password) = load_config(
+                dirname(__FILE__) . "/configuration.xml",
+                dirname(__FILE__) . "/configuration.xsd"
+            );
             $db = new PDO($dsn, $user);
             $prepared = $db -> prepare("INSERT INTO users (email, name, user_password, user_role) VALUES (?, ?, ?, ?)");
             $prepared -> execute([$email, $name, $hashed_password, $role]);
 
-            echo "Registration successful!";
+            $new_user_id = $db -> lastInsertId();
 
-            // Figure out how to make the following if statement work.
-            /*if ($prepared -> execute()) {
-                $newer_id = $db -> insert_id;
-
-                $result = $db -> query("SELECT * FROM users WHERE user_id = $newer_id");
-                $new_user = $result -> fetch_assoc();
-            }*/
+            $stmt = $db -> prepare("SELECT * FROM users WHERE user_id = ?");
+            $stmt -> execute([$new_user_id]);
+            $new_user = $stmt -> fetch(PDO::FETCH_ASSOC);
         } catch(PDOException $e) {
-            echo "Error: " . $e -> getMessage();
+            echo "<p style = 'color: red;'>Error: " . $e -> getMessage() . "</p>";
         }
     }
 ?>
@@ -63,9 +61,14 @@
         <input type="submit" value="Register">
     </form><br><br>
     <!-- TODO: Show data from the recently registered user -->
-    <?php if ($new_user): ?>
-        <p><strong>Registered correctly</strong></p>
-        <p>ID:</p>
+    <?php if (!empty($new_user)): ?>
+        <div>
+            <p><strong>Registered correctly</strong></p>
+            <p>ID: <?php echo htmlspecialchars($new_user['user_id']); ?></p>
+            <p>Email: <?php echo htmlspecialchars($new_user['email']); ?></p>
+            <p>Name: <?php echo htmlspecialchars($new_user['name']); ?></p>
+            <p>Role: <?php echo htmlspecialchars($new_user['user_role']); ?></p>
+        </div><br>
     <?php endif; ?>
     <a href="admin.php">Go back</a>
 </body>
