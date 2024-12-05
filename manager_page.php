@@ -1,14 +1,14 @@
 <?php 
 	session_start();
-	if($_SESSION['user'] == 1 && $_SESSION['user'] == 2) {	
+	if (!isset($_SESSION['user'])) {
 		header("Location: login.php?redirected=true");
-		return;
-	}else{
-		if($_SESSION['user']['role']==0){
+		exit;
+	} else {
+		if ($_SESSION['user']['user_role'] !== 1) {
 			header("Location: main.php?redirected=true");
-			return;
+			exit;
 		}
-	}	
+	}
 	
 ?>
 <!DOCTYPE html>
@@ -17,9 +17,10 @@
 		<title>Expenses</title>	
 		<meta charset = "UTF-8">
 	</head>
-	<body>	
-		<p> Expense manager zone </p>
-		<?php echo "Welcome manager" . $_SESSION['user']['name'];?>
+	<body>
+		<?php require 'header.php'; ?>
+		<h1> Expense management </h1>
+		<?php echo "<h3>User: " . $_SESSION['user']['name'] . "</h3>"; ?>
 		<br><a href="logout.php"> Logout <a>
 	</body>
 </html>

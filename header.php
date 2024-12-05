@@ -6,7 +6,7 @@
     if ($_SESSION['user']['user_role'] == 2) {
         echo '<a href="admin.php">Admin panel</a>';
     } elseif ($_SESSION['user']['user_role'] == 1) {
-        echo '<a href="manager_page.php">Approve expenses</a>';
+        echo '<a href="manager_page.php">Manage expenses</a>';
     }
     ?>
     <a href="logout.php">Log out</a>

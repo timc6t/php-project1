@@ -27,7 +27,7 @@ function check_user($email, $password){
 	$res = load_config(dirname(__FILE__)."/configuration.xml", dirname(__FILE__)."/configuration.xsd");
 	$db = new PDO($res[0], $res[1], $res[2]);
 
-	$prepared = $db -> prepare(	"SELECT user_id, email, user_role FROM users
+	$prepared = $db -> prepare(	"SELECT user_id, email, name, user_role FROM users
 										WHERE email = ? AND user_password = ?");
 	$prepared -> execute(array($email, $password));
 
@@ -72,6 +72,7 @@ function add_report() {
 	}
 }
 
+// The following function is to be used for sending the expenses through email
 function get_email() {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_start();

@@ -5,8 +5,8 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $email = $_POST['email'];
         $name = $_POST['name'];
-        $full_surname = $_POST['full_surname'];
         $password = $_POST['password'];
+        $role = $_POST['role'];
 
         // Añadir la siguiente línea más tarde
         // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -16,10 +16,18 @@
             //$db = new PDO($result[0], $result[1], $result[2]);
             list($dsn, $user, $db_password) = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
             $db = new PDO($dsn, $user);
-            $prepared = $db -> prepare("INSERT INTO users (email, name, full_surname,  user_password) VALUES (?, ?, ?, ?)");
-            $prepared -> execute([$email, $name, $full_surname, $hashed_password]);
+            $prepared = $db -> prepare("INSERT INTO users (email, name, user_password, user_role) VALUES (?, ?, ?, ?)");
+            $prepared -> execute([$email, $name, $hashed_password, $role]);
 
             echo "Registration successful!";
+
+            // Figure out how to make the following if statement work.
+            /*if ($prepared -> execute()) {
+                $newer_id = $db -> insert_id;
+
+                $result = $db -> query("SELECT * FROM users WHERE user_id = $newer_id");
+                $new_user = $result -> fetch_assoc();
+            }*/
         } catch(PDOException $e) {
             echo "Error: " . $e -> getMessage();
         }
@@ -42,14 +50,23 @@
         <label for="name">Name:</label><br>
         <input type="name" id="name" name="name" required><br><br>
 
-        <label for="full_surname">Full surname:</label><br>
-        <input type="full_surname" id="full_surname" name="full_surname" required><br><br>
-
         <label for="password">Password:</label><br>
         <input type="password" id="password" name="password" required><br><br>
 
+        <label for="role">Role of the employee:</label><br>
+        <select name="role" required>
+            <option value="0">Employee</option>
+            <option value="1">Manager</option>
+            <option value="2">IT support</option>
+        </select><br><br>
+        
         <input type="submit" value="Register">
     </form><br><br>
-    <a href="login.php">Login here</a>
+    <!-- TODO: Show data from the recently registered user -->
+    <?php if ($new_user): ?>
+        <p><strong>Registered correctly</strong></p>
+        <p>ID:</p>
+    <?php endif; ?>
+    <a href="admin.php">Go back</a>
 </body>
 </html>
