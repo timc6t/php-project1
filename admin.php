@@ -15,6 +15,30 @@
             exit;
         }
     }
+
+    try {
+        list($dsn, $user, $db_password) = load_config(
+            dirname(__FILE__) . "/configuration.xml",
+            dirname(__FILE__) . "/configuration.xsd"
+        );
+        $db = new PDO($dsn, $user);
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_role'])) {
+            $user_id = $_POST['user_id'];
+            $new_role = $_POST['user_role'];
+
+            $prepared = $db -> prepare("UPDATE users SET user_role = ? WHERE user_id = ?");
+            $prepared -> execute([$new_role, $user_id]);
+
+            echo "<p style='color: green;'>User role updated successfully</p>";
+        }
+
+        $prepared = $db -> prepare("SELECT user_id, email, name, user_role FROM users");
+        $prepared -> execute();
+        $users = $prepared -> fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "<p style = 'color: red;'>Error: " . $e -> getMessage() . "</p>";
+    }
 ?>
 
 <!DOCTYPE html>
@@ -35,6 +59,44 @@
         1) Roles indicated with a 2 are for administrators while those with 1 are for managers. Roles with 0 are for the rest of the employees.<br>
         2) For this project only, all passwords are 12345. They will be hashed later but before that they might be changed.
     </p>
+    <h2>List of employees</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Change role</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php if (!empty($users)): ?>
+                <?php foreach ($users as $user): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($user['user_id']); ?></td>
+                        <td><?php echo htmlspecialchars($user['']); ?></td>
+                        <td><?php echo htmlspecialchars($user['']); ?></td>
+                        <td><?php echo htmlspecialchars($user['']); ?></td>
+                        <td>
+                            <form method="POST" action="">
+                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
+                                <select name="user_role">
+                                    <option value="0" <?php echo $user['user_role'] == 0 ? 'selected' : ''; ?>>Employee</option>
+                                    <option value="1" <?php echo $user['user_role'] == 1 ? 'selected' : ''; ?>>Manager</option>
+                                    <option value="2" <?php echo $user['user_role'] == 2 ? 'selected' : ''; ?>>IT Support</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <tr>
+
+                </tr>
+            <?php endif; ?>
+        </tbody>
+    </table>
     <?php echo '<br><a href="register.php">Register a new employee</a>'; ?>
     <!-- List all the users that are in the database in here. Add the option to edit their roles. -->
 </body>
