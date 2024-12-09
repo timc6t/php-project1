@@ -5,6 +5,7 @@
  * This script handles the admin page. It checks the role of the user that is entering the
  * page. (To be described in depth later)
  */
+    require_once 'db_config.php';
     session_start();
     if (!isset($_SESSION['user'])) {
         header("Location: login.php?redirected=true");
@@ -60,6 +61,7 @@
         2) For this project only, all passwords are 12345. They will be hashed later but before that they might be changed.
     </p>
     <h2>List of employees</h2>
+<!-- TODO: Check later if this works -->
     <table>
         <thead>
             <tr>
@@ -75,9 +77,9 @@
                 <?php foreach ($users as $user): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($user['user_id']); ?></td>
-                        <td><?php echo htmlspecialchars($user['']); ?></td>
-                        <td><?php echo htmlspecialchars($user['']); ?></td>
-                        <td><?php echo htmlspecialchars($user['']); ?></td>
+                        <td><?php echo htmlspecialchars($user['email']); ?></td>
+                        <td><?php echo htmlspecialchars($user['name']); ?></td>
+                        <td><?php echo htmlspecialchars($user['user_role']); ?></td>
                         <td>
                             <form method="POST" action="">
                                 <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($user['user_id']); ?>">
@@ -86,13 +88,14 @@
                                     <option value="1" <?php echo $user['user_role'] == 1 ? 'selected' : ''; ?>>Manager</option>
                                     <option value="2" <?php echo $user['user_role'] == 2 ? 'selected' : ''; ?>>IT Support</option>
                                 </select>
+                                <button type="submit" name="update_role">Change role</button>
                             </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-
+                    <td colspan="5">No users found.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
