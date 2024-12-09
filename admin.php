@@ -62,7 +62,7 @@
     </p>
     <h2>List of employees</h2>
 <!-- TODO: Check later if this works -->
-    <table>
+    <table class="table-style">
         <thead>
             <tr>
                 <th>ID</th>
