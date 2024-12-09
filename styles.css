@@ -1,0 +1,21 @@
+.table-style {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 25px 0;
+    text-align: left;
+}
+
+.table-style th,
+.table-style td {
+    border: 1px solid black;
+    /*padding: 12px;*/
+}
+
+.table-style th {
+    font-weight: bold;
+    text-align: center;
+}
+
+.status-update {
+    text-align: center;
+}
