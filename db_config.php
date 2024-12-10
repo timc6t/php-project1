@@ -24,7 +24,10 @@ function load_config($name, $schema){
 }
 
 function check_user($email, $password){
-	$res = load_config(dirname(__FILE__)."/configuration.xml", dirname(__FILE__)."/configuration.xsd");
+	$res = load_config(
+		dirname(__FILE__)."/configuration.xml",
+		dirname(__FILE__)."/configuration.xsd"
+	);
 	$db = new PDO($res[0], $res[1], $res[2]);
 
 	$prepared = $db -> prepare(	"SELECT user_id, email, name, user_role FROM users
@@ -50,40 +53,111 @@ function check_user($email, $password){
 	return FALSE;*/
 }
 
-function add_report() {
-	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-		$user_id = $_POST['user_id'];
-		$category = $_POST['category'];
-		$description = $_POST['description'];
-		$date = $_POST['date'];
-		$amount = $_POST['amount'];
-	
-		if ($user_id && $category && $description && $date && $amount) {
-	
-			if (add_expense($user_id, $category, $description, $date, $amount)) {
-				$message = 'Expense added successfully!';
-			} else {
-				$message = 'Failed to add expense.';
-			}
-	
-		} else {
-			$message = 'Please fill in all required fields.';
+function addExpense($user_id, $cat, $desc, $amount, $created_at, $status = 'pending') {
+	try {
+		$res = load_config(
+			dirname(__FILE__)."/configuration.xml",
+			dirname(__FILE__)."/configuration.xsd"
+		);
+		$db = new PDO($res[0], $res[1], $res[2]);
+
+		$checkUser = $db->prepare("SELECT COUNT(*) FROM users WHERE user_id = ?");
+		$checkUser->execute([$user_id]);
+
+		if ($checkUser->fetchColumn() == 0) {
+			throw new Exception("The user does not exist in the database.");
 		}
+
+		$prepared = $db -> prepare("INSERT INTO expenses (user_id, category, description, amount, report_date, status) VALUES (?, ?, ?, ?, ?, ?)");
+		$prepared -> execute([$user_id, $cat, $desc, $amount, $created_at, $status]);
+
+		return "Report succesfully created";
+	} catch (PDOException $e) {
+		throw new Exception("Database error: " . $e -> getMessage());
+	} catch (Exception $e) {
+		throw new Exception($e -> getMessage());
+	}
+}
+
+function getFilteredReports() {
+	try {
+		$res = load_config(
+			dirname(__FILE__)."/configuration.xml",
+			dirname(__FILE__)."/configuration.xsd"
+		);
+		$db = new PDO($res[0], $res[1], $res[2]);
+		$user_id = $_SESSION['user']['user_id'];
+		$status_filter = isset($_GET['status_filter']) ? $_GET['status_filter'] : '';
+
+		echo "User ID: $user_id<br>";
+		echo "Status filter: $status_filter<br>";
+		$sql = 'SELECT expenses.*, users.name AS employee_name
+				FROM expenses
+				JOIN users ON expenses.user_id = users.user_id
+				WHERE expenses.user_id = :user_id';
+		
+		if ($status_filter) {
+			$sql .= ' AND expenses.status = :status';
+		}
+
+		$sql .= ' ORDER BY expenses.created_at DESC';
+		$prepared = $db -> prepare($sql);
+		$prepared -> bindParam(':user_id', $user_id);
+
+		if ($status_filter) {
+			$prepared -> bindParam(':status', $status_filter);
+		}
+
+		$prepared -> execute();
+		$reports = $prepared -> fetchAll(PDO::FETCH_ASSOC);
+
+		$output = '';
+
+		foreach ($reports as $report) {
+			$rep_id = $report['report_id'];
+			$user_id = $report['user_id'];
+			$name = $report['employee_name'];
+			$cat = $report['category'];
+			$desc = $report['description'];
+			$repDate = $report['report_date'];
+			$date = DateTime::createFromFormat('Y-m-d', $repDate);
+			$formatted_repDate = $date -> format('d-m-Y');
+			$amount = $report['amount'];
+			$status = $report['status'];
+			$created = $report['created_at'];
+			$output .= "<tr>
+                            <td>$name</td>
+                            <td>$cat</td>
+                            <td>$desc</td>
+                            <td>$formatted_repDate</td>
+                            <td>$amount</td>
+                            <td>$status</td>
+                            <td>$created</td>
+                        </tr>";
+		}
+		return $output;
+	} catch (PDOException $e) {
+		echo 'Database error: ' . $e -> getMessage(); 
 	}
 }
 
 function getStatusReports() {
 	try {
-		$res = load_config(dirname(__FILE__)."/configuration.xml", dirname(__FILE__)."/configuration.xsd");
+		$res = load_config(
+			dirname(__FILE__)."/configuration.xml",
+			dirname(__FILE__)."/configuration.xsd"
+		);
 		$db = new PDO($res[0], $res[1], $res[2]);
 
-		if ($db) {
-            echo "Conexión exitosa a la base de datos.<br>";
-        } else {
-            echo "Error de conexión a la base de datos.<br>";
+		if (isset($_POST['update_status'])) {
+            $report_id = $_POST['report_id'];
+            $status = $_POST['status'];
+
+            $updateStatusQuery = $db->prepare("UPDATE expenses SET status = ? WHERE report_id = ?");
+            $updateStatusQuery->execute([$status, $report_id]);
         }
 
-		$sql = 'SELECT expenses.*, users.name AS employee_name FROM expenses JOIN users ON expenses.user_id = users.user_id';
+		$sql = 'SELECT expenses.*, users.name AS employee_name FROM expenses JOIN users ON expenses.user_id = users.user_id ORDER BY expenses.report_date DESC';
 		$reports = $db->query($sql);
 
 		$output = '';
@@ -95,14 +169,23 @@ function getStatusReports() {
 			$cat = $report['category'];
 			$desc = $report['description'];
 			$repDate = $report['report_date'];
+			$date = DateTime::createFromFormat('Y-m-d', $repDate);
+			$formatted_repDate = $date -> format('d-m-Y');
 			$amount = $report['amount'];
 			$status = $report['status'];
 			$created = $report['created_at'];
+			$date = DateTime::createFromFormat('Y-m-d H:i:s', $created);
+			if ($date) {
+				$formatted_created = $date -> format('d-m-Y H:i');
+			} else {
+				$formatted_created = $created;
+			}
+			
 			$output .=  "<tr>
 							<td>$name</td>
 							<td>$cat</td>
 							<td>$desc</td>
-							<td>$repDate</td>
+							<td>$formatted_repDate</td>
 							<td>$amount</td>
 							<td class='status-update'>
 								<form method='POST' action=''>
@@ -115,7 +198,7 @@ function getStatusReports() {
 									<button type='submit' name='update_status'>Update</button>
 								</form>
 							</td>
-							<td>$created</td>
+							<td>$formatted_created</td>
 						</tr>";
 		}
 		return $output;
@@ -125,7 +208,7 @@ function getStatusReports() {
 }
 
 // The following function is to be used for sending the expenses through email
-function get_email() {
+/*function get_email() {
 	if (session_status() === PHP_SESSION_NONE) {
 		session_start();
 	}
@@ -151,4 +234,4 @@ function get_email() {
 	} else {
 		return 'The presence of an unknown entity has been detected in your session. It is recommended that you DO NOT CONTINUE NAVIGATING THIS WEBSITE. Ignoring this warning may occur in strange events that are out of our control.'; // User unknown error
 	}
-}
+}*/
