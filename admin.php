@@ -61,7 +61,6 @@
         2) For this project only, all passwords are 12345. They will be hashed later but before that they might be changed.
     </p>
     <h2>List of employees</h2>
-<!-- TODO: Check later if this works -->
     <table class="table-style">
         <thead>
             <tr>
