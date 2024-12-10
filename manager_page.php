@@ -33,7 +33,7 @@
             <th>Status</th>
             <th>Created at</th>
         </tr>		
-		<?php echo getReports(); ?>
+		<?php echo getStatusReports(); ?>
 	</table>
 		<br><a href="logout.php"> Logout <a>
 	</body>

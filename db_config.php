@@ -72,7 +72,7 @@ function add_report() {
 	}
 }
 
-function getReports() {
+function getStatusReports() {
 	try {
 		$res = load_config(dirname(__FILE__)."/configuration.xml", dirname(__FILE__)."/configuration.xsd");
 		$db = new PDO($res[0], $res[1], $res[2]);
