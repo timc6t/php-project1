@@ -2,11 +2,6 @@
     require 'sessions.php';
     require_once 'db_config.php';
     check_session();
-
-    $res = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd"); 
-    $cadena_conexion = 'mysql:dbname=employee_expenses;host=127.0.0.1'; 
-    $usuario = 'root'; 
-    $clave = ''; 
 ?>
 
 <!DOCTYPE html>
@@ -21,6 +16,17 @@
     <?php require 'header.php'; ?>
     <h1>Your expenses</h1>
 
+    <form method="GET" action="main.php">
+        <label for="status_filter">Filter by status: </label>
+        <select name="status_filter" id="status_filter">
+            <option value="">All</option>
+            <option value="pending" <?php echo isset($_GET['status_filter']) && $_GET['status_filter'] == 'pending' ? 'selected' : ''; ?>>Pending</option>
+            <option value="approved" <?php echo isset($_GET['status_filter']) && $_GET['status_filter'] == 'approved' ? 'selected' : ''; ?>>Approved</option>
+            <option value="denied" <?php echo isset($_GET['status_filter']) && $_GET['status_filter'] == 'denied' ? 'selected' : ''; ?>>Denied</option>
+        </select>
+        <button type="submit">Apply filter</button>
+    </form>
+
     <!-- TODO: List here all of the expenses that the employee has. -->
     <!-- For now it only shows all the expenses from all the employees. -->
 
@@ -34,27 +40,7 @@
             <th>Status</th>
             <th>Created at</th>
         </tr>		
-		<?php
-            try { 
-                $bd = new PDO($cadena_conexion, $usuario, $clave); 				
-                $sql = 'SELECT * FROM expenses JOIN users ON expenses.user_id = users.user_id'; 
-                $users = $bd->query($sql); 				
-                foreach ($users as $usu) {
-                    //$rep_id = $usu['report_id'];
-                    $user_id = $usu['user_id'];
-                    $name = $usu['name'];
-                    $cat = $usu['category'];
-                    $desc = $usu['description'];
-                    $repDate = $usu['report_date'];
-                    $amount = $usu['amount'];
-                    $status = $usu['status'];
-                    $created = $usu['created_at'];
-                    echo "<tr><td>$name</td><td>$cat</td><td>$desc</td><td>$repDate</td><td>$amount</td><td>$status</td><td>$created</td></tr>";
-                }
-            } catch (PDOException $e) { 
-                echo 'Database error: ' . $e->getMessage(); 
-            }
-		?>
+		<?php echo getFilteredReports(); ?>
 	</table>
 
     <p><a href="new_expense.php">Add a new expense</a></p>

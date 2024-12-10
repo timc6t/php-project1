@@ -3,20 +3,23 @@
     require 'db_config.php';
     check_session();
 
+    $user_id = $_SESSION['user']['user_id'] ?? null;
+
+    if ($user_id === null) {
+        echo "Error: No user ID found. Please, log in.";
+        exit;
+    }
+
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $cat = $_POST['category'];
         $desc = $_POST['description'];
         $amount = $_POST['amount'];
         $created_at = $_POST['report_date'];
-        // $status = $_POST['status'];
+        $status = 'pending';
 
         try {
-            list($dsn, $user, $db_password) = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd");
-            $db = new PDO($dsn, $user, $db_password);
-            $prepared = $db -> prepare("INSERT INTO expenses (category, description, amount, report_date) VALUES (?, ?, ?, ?)");
-            $prepared -> execute([$cat, $desc, $amount, $created_at]);
-
-            echo "Report succesfully created";
+            $message = addExpense($user_id, $cat, $desc, $amount, $created_at);
+            echo $message;
         } catch (PDOException $e) {
             echo "Error: " . $e -> getMessage();
         }
@@ -34,14 +37,7 @@
     
     <h1>Write a new expense</h1>
 
-    <?php /*if ($message): ?>
-        <p><?php echo $message; ?></p>
-    <?php endif; */?>
-
     <form action="new_expense.php" method="POST">
-        <!-- <label for=""></label><br>
-        <input type="" id="" name="" required><br><br> -->
-
         <label for="category">Category:</label><br>
         <input type="text" id="category" name="category" required><br><br>
 
@@ -52,7 +48,7 @@
         <input type="number" step="0.01" id="amount" name="amount" required><br><br>
 
         <label for="report_date">Date:</label><br>
-        <input type="report_date" id="report_date" name="report_date" required><br><br>
+        <input type="date" id="report_date" name="report_date" required><br><br>
 
         <!-- <input type="file" name="file"><br><br> -->
 
