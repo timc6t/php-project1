@@ -100,6 +100,5 @@
         </tbody>
     </table>
     <?php echo '<br><a href="register.php">Register a new employee</a>'; ?>
-    <!-- List all the users that are in the database in here. Add the option to edit their roles. -->
 </body>
 </html>
