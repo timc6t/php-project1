@@ -72,6 +72,58 @@ function add_report() {
 	}
 }
 
+function getReports() {
+	try {
+		$res = load_config(dirname(__FILE__)."/configuration.xml", dirname(__FILE__)."/configuration.xsd");
+		$db = new PDO($res[0], $res[1], $res[2]);
+
+		if ($db) {
+            echo "Conexión exitosa a la base de datos.<br>";
+        } else {
+            echo "Error de conexión a la base de datos.<br>";
+        }
+
+		$sql = 'SELECT expenses.*, users.name AS employee_name FROM expenses JOIN users ON expenses.user_id = users.user_id';
+		$reports = $db->query($sql);
+
+		$output = '';
+
+		foreach ($reports as $report) {
+			$rep_id = $report['report_id'];
+			$user_id = $report['user_id'];
+			$name = $report['employee_name'];
+			$cat = $report['category'];
+			$desc = $report['description'];
+			$repDate = $report['report_date'];
+			$amount = $report['amount'];
+			$status = $report['status'];
+			$created = $report['created_at'];
+			$output .=  "<tr>
+							<td>$name</td>
+							<td>$cat</td>
+							<td>$desc</td>
+							<td>$repDate</td>
+							<td>$amount</td>
+							<td class='status-update'>
+								<form method='POST' action=''>
+									<input type='hidden' name='report_id' value='$rep_id'>
+									<select name='status'>
+										<option value='pending'" . ($status == 'pending' ? ' selected' : '') . ">Pending</option>
+										<option value='approved'" . ($status == 'approved' ? ' selected' : '') . ">Approved</option>
+										<option value='denied'" . ($status == 'denied' ? ' selected' : '') . ">Denied</option>
+									</select>
+									<button type='submit' name='update_status'>Update</button>
+								</form>
+							</td>
+							<td>$created</td>
+						</tr>";
+		}
+		return $output;
+	} catch (PDOException $e) { 
+		echo 'Database error: ' . $e -> getMessage(); 
+	}
+}
+
 // The following function is to be used for sending the expenses through email
 function get_email() {
 	if (session_status() === PHP_SESSION_NONE) {
