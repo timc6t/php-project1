@@ -9,13 +9,7 @@
 			header("Location: main.php?redirected=true");
 			exit;
 		}
-	}
-
-	$res = load_config(dirname(__FILE__) . "/configuration.xml", dirname(__FILE__) . "/configuration.xsd"); 
-    $cadena_conexion = 'mysql:dbname=employee_expenses;host=127.0.0.1'; 
-    $usuario = 'root'; 
-    $clave = ''; 
-	
+	}	
 ?>
 <!DOCTYPE html>
 <html>
@@ -39,45 +33,7 @@
             <th>Status</th>
             <th>Created at</th>
         </tr>		
-		<?php
-            try { 
-                $bd = new PDO($cadena_conexion, $usuario, $clave); 				
-                $sql = 'SELECT expenses.*, users.name AS employee_name FROM expenses JOIN users ON expenses.user_id = users.user_id'; 
-                $reports = $bd->query($sql); 				
-                foreach ($reports as $report) {
-                    $rep_id = $report['report_id'];
-                    $user_id = $report['user_id'];
-                    $name = $report['employee_name'];
-                    $cat = $report['category'];
-                    $desc = $report['description'];
-                    $repDate = $report['report_date'];
-                    $amount = $report['amount'];
-                    $status = $report['status'];
-                    $created = $report['created_at'];
-                    echo "<tr>
-							<td>$name</td>
-							<td>$cat</td>
-							<td>$desc</td>
-							<td>$repDate</td>
-							<td>$amount</td>
-							<td class='status-update'>
-								<form method='POST' action=''>
-									<input type='hidden' name='report_id' value='$rep_id'>
-									<select name='status'>
-										<option value='pending'" . ($status == 'pending' ? ' selected' : '') . ">Pending</option>
-										<option value='approved'" . ($status == 'approved' ? ' selected' : '') . ">Approved</option>
-										<option value='denied'" . ($status == 'denied' ? ' selected' : '') . ">Denied</option>
-									</select>
-									<button type='submit' name='update_status'>Update</button>
-								</form>
-							</td>
-							<td>$created</td>
-						  </tr>";
-                }
-            } catch (PDOException $e) { 
-                echo 'Database error: ' . $e->getMessage(); 
-            }
-		?>
+		<?php echo getReports(); ?>
 	</table>
 		<br><a href="logout.php"> Logout <a>
 	</body>
