@@ -1,6 +1,6 @@
 <?php
 /**
- * Manages the expense reports page for the admin user.
+ * Manages the expenses page for the manager user.
  * 
  * This script handles the expense reports page for users with admin privileges. It ensures 
  * that only logged-in users with an admin role (user role 1) can access this page. If the 
