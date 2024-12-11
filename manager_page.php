@@ -1,25 +1,39 @@
 <?php
-	require_once 'db_config.php';
-	session_start();
+/**
+ * Manages the expense reports page for the admin user.
+ * 
+ * This script handles the expense reports page for users with admin privileges. It ensures 
+ * that only logged-in users with an admin role (user role 1) can access this page. If the 
+ * user is not logged in or does not have the appropriate role, they are redirected to 
+ * the login page or the main page accordingly. The script also includes the functionality 
+ * to download the expense reports in PDF format.
+ * 
+ * If the user requests to download the expenses in PDF, the script fetches all expenses 
+ * and generates a PDF document.
+ * 
+ * @throws Exception If there is an error while generating the PDF (e.g., if fetching expenses fails).
+ */
+require_once 'db_config.php';
+session_start();
 
-	if (!isset($_SESSION['user'])) {
-		header("Location: login.php?redirected=true");
+if (!isset($_SESSION['user'])) {
+	header("Location: login.php?redirected=true");
+	exit;
+} else {
+	if ($_SESSION['user']['user_role'] !== 1) {
+		header("Location: main.php?redirected=true");
 		exit;
-	} else {
-		if ($_SESSION['user']['user_role'] !== 1) {
-			header("Location: main.php?redirected=true");
-			exit;
-		}
 	}
+}
 
-	if (isset($_GET['download_pdf'])) {
-		try {
-			$expenses = fetchExpenses();
-			generatePDF($expenses);
-		} catch (Exception $e) {
-			echo $e -> getMessage();
-		}
+if (isset($_GET['download_pdf'])) {
+	try {
+		$expenses = fetchExpenses();
+		generatePDF($expenses);
+	} catch (Exception $e) {
+		echo $e -> getMessage();
 	}
+}
 ?>
 <!DOCTYPE html>
 <html>
