@@ -2,13 +2,24 @@
 require_once 'fpdf/fpdf.php';
 
 /**
- * Loads the configuration from an XML file and validates it against an XSD schema.
+ * Loads and validates the configuration XML file, then extracts the database connection
+ * details.
  * 
- * @param string $name The path to the XML configuration file.
- * @param string $schema The path to the XSD schema for validation.
+ * This function loads the specified XML configuration file, validates it using an XML
+ * schema, and then extracts the necessary database connection details (IP address, database,
+ * name, user, and password) using XPath queries. If the XML validation fails, an
+ * 'InvalidArgumentException' is thrown.
+ *
+ * @param string $name   The path to the configuration XML file.
+ * @param string $schema The path to the XML schema file for validation.
  * 
- * @return array An array containing the connection string, database user, and password.
- * @throws InvalidArgumentException If the XML configuration file is invalid or doesn't match the schema.
+ * @return array An array containing the following values:
+ *               - Connection string for the database (`mysql:dbname=...;host=...`),
+ *               - The database user,
+ *               - The database password.
+ * 
+ * @throws InvalidArgumentException If the XML schema validation fails, an exception is
+ * 									thrown.
  */
 function load_config($name, $schema){
 	$config = new DOMDocument();
@@ -31,11 +42,23 @@ function load_config($name, $schema){
 }
 
 /**
- * Verifies the user credentials by checking the email and password.
+ * Verifies the user's email and password against the database.
  * 
- * @param string $email The email of the user.
- * @param string $password The password of the user.
- * @return array|false The user data if credentials are valid, otherwise false.
+ * This function checks if a user exists in the database with the provided email and
+ * password. It loads the database configuration, connects to the database using PDO, and
+ * queries the `users` table to match the email and password. If a match is found, the user's
+ * information is returned. If no match is found, the function returns `FALSE`.
+ *
+ * @param string $email    The email address of the user attempting to log in.
+ * @param string $password The password of the user attempting to log in.
+ * 
+ * @return array|bool If a user with the provided email and password is found, an associative
+ * 					  array containing the user's 'user_id', 'email', 'name', and
+ *                    'user_role' is returned. If no matching user is found, the function
+ *                    returns `FALSE`.
+ * 
+ * @throws PDOException If there is an error with the database connection or query execution,
+ * an exception will be thrown.
  */
 function check_user($email, $password){
 	$res = load_config(
@@ -68,17 +91,71 @@ function check_user($email, $password){
 }
 
 /**
- * Adds a new expense to the database.
+ * Handles the management of user roles and fetching of user data.
  * 
- * @param int $user_id The ID of the user submitting the expense.
- * @param string $cat The category of the expense.
- * @param string $desc The description of the expense.
- * @param float $amount The amount of the expense.
- * @param string $created_at The creation date of the report.
- * @param string $status The status of the report (default is 'pending').
+ * This function is responsible for updating a user's role in the database based on the
+ * provided POST data, and for fetching all users from the database. It uses PDO for database 
+ * interaction and handles any exceptions that may occur during the process.
  * 
- * @return string A success message if the report is added successfully.
- * @throws \Exception If the user does not exist or there is a database error.
+ * @param PDO 		 $db 	   The database connection object, used to interact with the
+ * 							   database.
+ * @param string 	 $method   The request method ('POST' or 'GET'). Used to determine whether
+ * 							   to handle a role update or just fetch the user data.
+ * @param array|null $postData An associative array containing POST data. If the method is
+ * 							   'POST' and contains an 'update_role' key, the function will 
+ * 							   attempt to update the user's role.
+ * 
+ * @return array Returns an array with two elements:
+ * 				 - A string containing a success of error message, HTML formatted.
+ * 				 - An array of users, each represented as an associative array with 'user_id',
+ * 				   'email', 'name', and 'user_role' keys.
+ * 
+ * @throws PDOException If an error occurs during database interactions, an exception will be
+ * 						thrown and caught.
+ */
+function manageUsers($db, $method, $postData = null) {
+	$message = '';
+	$users = [];
+	
+	try {
+		if ($method === "POST" && isset($postData['update_role'])) {
+			$user_id = $postData['user_id'];
+			$new_role = $postData['user_role'];
+
+			$prepared = $db -> prepare("UPDATE users SET user_role = ? WHERE user_id ? ?");
+			$prepared -> execute([$new_role, $user_id]);
+
+			$message = "<p style='color: green;'>Role updated successfully.</p>";
+		}
+
+		$prepared = $db -> prepare("SELECT user_id, email, name, user_role FROM users");
+		$prepared -> execute();
+		$users = $prepared -> fetchAll(PDO::FETCH_ASSOC);
+	} catch (PDOException $e) {
+		$message = "<p style='color: red;'>Error: " . $e -> getMessage() . "</p>";
+	}
+	
+	return [$message, $users];
+}
+
+/**
+ * Adds a new expense report to the database.
+ * 
+ * This function inserts a new expense report into the `expenses` table in the database. 
+ * Before inserting, it checks if the user exists in the `users` table. If the user doesn't
+ * exist, an exception is thrown. The function handles database-related errors and throws
+ * appropriate exceptions.
+ *
+ * @param int    $user_id     The ID of the user submitting the expense report.
+ * @param string $cat         The category of the expense (e.g., Travel, Office Supplies).
+ * @param string $desc        A description of the expense.
+ * @param float  $amount      The amount of the expense.
+ * @param string $created_at  The date the expense was created (in `Y-m-d` format).
+ * @param string $status      The status of the expense report (default is 'pending').
+ * 
+ * @return string A message indicating whether the expense report was successfully created.
+ * 
+ * @throws Exception If the user does not exist in the database, or any database-related error occurs.
  */
 function addExpense($user_id, $cat, $desc, $amount, $created_at, $status = 'pending') {
 	try {
@@ -107,9 +184,19 @@ function addExpense($user_id, $cat, $desc, $amount, $created_at, $status = 'pend
 }
 
 /**
- * Retrieves expenses for the logged-in user. The expenses can be filtered based on their status.
- * @return string HTML table rows representing the filtered expenses.
- * @throws PDOException If a database error occurs.
+ * Retrieves expenses for the logged-in user. The expenses can be filtered based on their
+ * status.
+ * 
+ * This function fetches the expense reports from the database for the currently logged-in
+ * user with an optional status filter applied. It queries the `expenses` and `users` tables,
+ * joining them to retrieve the necessary data, and formats the results into an HTML table
+ * row format. If no status filter is provided, all reports for the user are returned. The
+ * results are ordered by the report creation date in descending order.
+ * 
+ * @return string An HTML string representing the filtered expense reports, formatted as
+ * 				  table rows.
+ * 
+ * @throws PDOException If there is an issue with the database connection or query execution.
  */
 function getFilteredReports() {
 	try {
@@ -174,10 +261,18 @@ function getFilteredReports() {
 }
 
 /**
- * Retrieves all expenses from the database and allows status updates.
+ * Retrieves and displays the status of expense reports, with the ability to update their
+ * status.
  * 
- * @return string HTML table rows with expenses and status update forms.
- * @throws PDOException If a database error occurs.
+ * This function retrieves all expense reports from the database, joining the 'expenses' and
+ * 'users' tables to include the employee's name. The reports are ordered by the report
+ * creation date in descending order. If a status update request is made through the 'POST'
+ * method, the status of the specific report is updated in the database.
+ *
+ * @return string An HTML string representing the status of the expense reports, formatted as
+ * 				  table rows with status update forms.
+ * 
+ * @throws PDOException If there is an issue with the database connection or query execution.
  */
 function getStatusReports() {
 	try {
@@ -240,11 +335,26 @@ function getStatusReports() {
 }
 
 /**
- * Generates a PDF report of the given expenses.
+ * Generates a PDF document containing a list of expense reports.
  * 
- * @param mixed $expenses An array of expenses data.
+ * This function creates a PDF file using the `FPDF` library. It includes a header and footer
+ * on each page and then generates a table with the following columns: Employee, Category,
+ * Description, Amount, Report date, Status, and Created at. The data for the table is
+ * populated from the `$expenses` array. The PDF is then output as a downloadable file named
+ * 'expense_reports.pdf'.
+ *
+ * @param array $expenses An array of expense reports, where each report is an associative
+ * 						  array with the following keys:
+ * 						  - 'employee_name': The name of the employee.
+ * 						  - 'category': The category of the expense.
+ * 						  - 'description': A description of the expense.
+ * 						  - 'amount': The amount of the expense.
+ * 						  - 'report_date': The date the expense report was created.
+ * 						  - 'status': The status of the expense report (e.g., 'pending',
+ * 									  'approved', 'denied').
+ * 						  - 'created_at': The timestamp when the expense report was created.
  * 
- * @return void Outputs the PDF file to the browser.
+ * @return void Outputs the PDF to the browser and exits the script. The PDF file is named `expense_reports.pdf`.
  */
 function generatePDF($expenses) {
 	class PDF extends FPDF {
@@ -293,10 +403,26 @@ function generatePDF($expenses) {
 }
 
 /**
- * Fetches all expense data from the database.
+ * Fetches all expense records from the database along with the employee name.
  * 
- * @return array An array of expenses data.
- * @throws PDOException If a database error occurs.
+ * This function retrieves a list of expenses along with the associated employee name,
+ * category, description, amount, report date, status, and creation date from the database.
+ * It uses a join between the 'expenses' and 'users' tables to get the employee name. The
+ * 'report_date' is formatted to a 'dd-mm-yyyy' format. The result is returned as an array of
+ * associative arrays, each representing an expense report.
+ * 
+ * @return array An array of expense records. Each record is an associative array containing:
+ * 				 - 'employee_name': The name of the employee who submitted the expense.
+ * 				 - 'category': The category of the expense.
+ * 				 - 'description': A description of the expense.
+ * 				 - 'amount': The amount of the expense.
+ * 				 - 'report_date': The formatted report date ('dd-mm-yyyy').
+ * 				 - 'created_at': The timestamp when the expense report was created.
+ * 				 - 'status': The status of the expense report (e.g., 'pending', 'approved',
+ * 							 'denied').
+ * 
+ * @throws Exception If there is a database error, an exception is thrown with the error
+ * 					 message.
  */
 function fetchExpenses() {
 	try {
