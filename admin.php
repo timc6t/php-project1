@@ -1,45 +1,54 @@
 <?php
 /**
- * Admin page script
+ * Admin page for managing user roles
  * 
- * This script handles the admin page. It checks the role of the user that is entering the
- * page. (To be described in depth later)
+ * This script allows administrators to manage the roles of employees, managers, and IT 
+ * support. It first checks if the user is logged in and if their role is 'administrator'
+ * (role 2). If not, they are redirected to a different page. It then provides functionality
+ * for updating a user's role through a form and displays a table of users with their
+ * respective roles. The script uses PDO for database interaction to fetch user details and
+ * update their roles.
+ * 
+ * @throws PDOException             If there is an error connecting to the database or
+ *                                  executing the query.
+ * @throws InvalidArgumentException If there is an issue with loading the configuration file.
  */
-    require_once 'db_config.php';
-    session_start();
-    if (!isset($_SESSION['user'])) {
-        header("Location: login.php?redirected=true");
+require_once 'db_config.php';
+session_start();
+if (!isset($_SESSION['user'])) {
+    header("Location: login.php?redirected=true");
+    exit;
+} else {
+    if ($_SESSION['user']['user_role'] !== 2) {
+        header("Location: main.php?redirected=true");
         exit;
-    } else {
-        if ($_SESSION['user']['user_role'] !== 2) {
-            header("Location: main.php?redirected=true");
-            exit;
-        }
+    }
+}
+
+try {
+    list($dsn, $user, $db_password) = load_config(
+        dirname(__FILE__) . "/configuration.xml",
+        dirname(__FILE__) . "/configuration.xsd"
+    );
+
+    $db = new PDO($dsn, $user);
+
+    if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_role'])) {
+        $user_id = $_POST['user_id'];
+        $new_role = $_POST['user_role'];
+
+        $prepared = $db -> prepare("UPDATE users SET user_role = ? WHERE user_id = ?");
+        $prepared -> execute([$new_role, $user_id]);
+
+        echo "<p style='color: green;'>User role updated successfully</p>";
     }
 
-    try {
-        list($dsn, $user, $db_password) = load_config(
-            dirname(__FILE__) . "/configuration.xml",
-            dirname(__FILE__) . "/configuration.xsd"
-        );
-        $db = new PDO($dsn, $user);
-
-        if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['update_role'])) {
-            $user_id = $_POST['user_id'];
-            $new_role = $_POST['user_role'];
-
-            $prepared = $db -> prepare("UPDATE users SET user_role = ? WHERE user_id = ?");
-            $prepared -> execute([$new_role, $user_id]);
-
-            echo "<p style='color: green;'>User role updated successfully</p>";
-        }
-
-        $prepared = $db -> prepare("SELECT user_id, email, name, user_role FROM users");
-        $prepared -> execute();
-        $users = $prepared -> fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-        echo "<p style = 'color: red;'>Error: " . $e -> getMessage() . "</p>";
-    }
+    $prepared = $db -> prepare("SELECT user_id, email, name, user_role FROM users");
+    $prepared -> execute();
+    $users = $prepared -> fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "<p style = 'color: red;'>Error: " . $e -> getMessage() . "</p>";
+}
 ?>
 
 <!DOCTYPE html>
