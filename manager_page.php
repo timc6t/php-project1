@@ -1,6 +1,7 @@
 <?php
 	require_once 'db_config.php';
 	session_start();
+
 	if (!isset($_SESSION['user'])) {
 		header("Location: login.php?redirected=true");
 		exit;
@@ -9,7 +10,16 @@
 			header("Location: main.php?redirected=true");
 			exit;
 		}
-	}	
+	}
+
+	if (isset($_GET['download_pdf'])) {
+		try {
+			$expenses = fetchExpenses();
+			generatePDF($expenses);
+		} catch (Exception $e) {
+			echo $e -> getMessage();
+		}
+	}
 ?>
 <!DOCTYPE html>
 <html>
@@ -35,6 +45,9 @@
         </tr>		
 		<?php echo getStatusReports(); ?>
 	</table>
+	<form method="GET" action="manager_page.php">
+		<button type="submit" name="download_pdf">Download expenses in PDF</button>
+	</form>
 		<br><a href="logout.php"> Logout <a>
 	</body>
 </html>
