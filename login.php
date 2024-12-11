@@ -3,58 +3,63 @@
  * User login script
  * 
  * This script handles user login by checking the provided email and password against the
- * database. It initiates a session to store user information upon successful login and
- * redirects to the header page. If the login fails, appropiate error messages are displayed.
+ * database. Upon successful login, it initiates a session to store user information and 
+ * redirects the user to a different page based on their role. If the login fails,
+ * appropriate error messages are displayed. 
+ * 
+ * The script works with the `check_user` function to validate user credentials and begins
+ * the session upon successful authentication. Users are redirected to different pages
+ * depending on their role: Admin, Manager, or Regular User (employee).
  * 
  * @throws PDOException If there is an error connecting to the database or executing the
- * query.
+ *                      query.
  * @throws InvalidArgumentException If the configuration file is invalid or cannot be loaded.
  */
 
-    require_once 'db_config.php';
+require_once 'db_config.php';
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        try {
-            $usu = check_user($_POST['user'], $_POST['user_password']);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    try {
+        $usu = check_user($_POST['user'], $_POST['user_password']);
 
-            if ($usu === false) {
-                $err = true;
-                $user = $_POST['user'];
-            } else {
-                session_start();
-                // print_r($_SESSION['user']);
+        if ($usu === false) {
+            $err = true;
+            $user = $_POST['user'];
+        } else {
+            session_start();
+            // print_r($_SESSION['user']);
 
-                $_SESSION['user'] = $usu;
-                // $_SESSION['user_id']['email'] = $usu['email'];
-                // var_dump(($_SESSION['user']['user_role']));
-                
-                switch ($_SESSION['user']['user_role']) {
-                    case 2:
-                        header("Location: admin.php");
-                        exit;
-                    case 1:
-                        header("Location: manager_page.php");
-                        exit;
-                    default:
-                        header("Location: main.php");
-                        exit;
-                }
-
-                /*if ($_SESSION['user']['user_role'] == 2) {
+            $_SESSION['user'] = $usu;
+            // $_SESSION['user_id']['email'] = $usu['email'];
+            // var_dump(($_SESSION['user']['user_role']));
+            
+            switch ($_SESSION['user']['user_role']) {
+                case 2:
                     header("Location: admin.php");
-                } elseif ($_SESSION['user']['user_role'] == 1) {
+                    exit;
+                case 1:
                     header("Location: manager_page.php");
-                } else {
+                    exit;
+                default:
                     header("Location: main.php");
-                }
-                exit;*/
+                    exit;
             }
-        } catch (PDOException $e) {
-            echo 'Database error: ' . $e -> getMessage();
-        } catch (InvalidArgumentException $e) {
-            echo 'Configuration file error: ' . $e -> getMessage();
+
+            /*if ($_SESSION['user']['user_role'] == 2) {
+                header("Location: admin.php");
+            } elseif ($_SESSION['user']['user_role'] == 1) {
+                header("Location: manager_page.php");
+            } else {
+                header("Location: main.php");
+            }
+            exit;*/
         }
+    } catch (PDOException $e) {
+        echo 'Database error: ' . $e -> getMessage();
+    } catch (InvalidArgumentException $e) {
+        echo 'Configuration file error: ' . $e -> getMessage();
     }
+}
 ?>
 
 <!DOCTYPE html>
