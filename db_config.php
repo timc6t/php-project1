@@ -1,6 +1,15 @@
 <?php
 require_once 'fpdf/fpdf.php';
 
+/**
+ * Loads the configuration from an XML file and validates it against an XSD schema.
+ * 
+ * @param string $name The path to the XML configuration file.
+ * @param string $schema The path to the XSD schema for validation.
+ * 
+ * @return array An array containing the connection string, database user, and password.
+ * @throws InvalidArgumentException If the XML configuration file is invalid or doesn't match the schema.
+ */
 function load_config($name, $schema){
 	$config = new DOMDocument();
 	$config->load($name);
@@ -21,6 +30,13 @@ function load_config($name, $schema){
 	return $result;
 }
 
+/**
+ * Verifies the user credentials by checking the email and password.
+ * 
+ * @param string $email The email of the user.
+ * @param string $password The password of the user.
+ * @return array|false The user data if credentials are valid, otherwise false.
+ */
 function check_user($email, $password){
 	$res = load_config(
 		dirname(__FILE__)."/configuration.xml",
@@ -51,6 +67,19 @@ function check_user($email, $password){
 	return FALSE;*/
 }
 
+/**
+ * Adds a new expense to the database.
+ * 
+ * @param int $user_id The ID of the user submitting the expense.
+ * @param string $cat The category of the expense.
+ * @param string $desc The description of the expense.
+ * @param float $amount The amount of the expense.
+ * @param string $created_at The creation date of the report.
+ * @param string $status The status of the report (default is 'pending').
+ * 
+ * @return string A success message if the report is added successfully.
+ * @throws \Exception If the user does not exist or there is a database error.
+ */
 function addExpense($user_id, $cat, $desc, $amount, $created_at, $status = 'pending') {
 	try {
 		$res = load_config(
@@ -77,6 +106,11 @@ function addExpense($user_id, $cat, $desc, $amount, $created_at, $status = 'pend
 	}
 }
 
+/**
+ * Retrieves expenses for the logged-in user. The expenses can be filtered based on their status.
+ * @return string HTML table rows representing the filtered expenses.
+ * @throws PDOException If a database error occurs.
+ */
 function getFilteredReports() {
 	try {
 		$res = load_config(
@@ -139,6 +173,12 @@ function getFilteredReports() {
 	}
 }
 
+/**
+ * Retrieves all expenses from the database and allows status updates.
+ * 
+ * @return string HTML table rows with expenses and status update forms.
+ * @throws PDOException If a database error occurs.
+ */
 function getStatusReports() {
 	try {
 		$res = load_config(
@@ -199,6 +239,13 @@ function getStatusReports() {
 	}
 }
 
+/**
+ * Generates a PDF report of the given expenses.
+ * 
+ * @param mixed $expenses An array of expenses data.
+ * 
+ * @return void Outputs the PDF file to the browser.
+ */
 function generatePDF($expenses) {
 	class PDF extends FPDF {
 		function Header() {
@@ -245,6 +292,12 @@ function generatePDF($expenses) {
 	exit;
 }
 
+/**
+ * Fetches all expense data from the database.
+ * 
+ * @return array An array of expenses data.
+ * @throws PDOException If a database error occurs.
+ */
 function fetchExpenses() {
 	try {
 		$res = load_config(
