@@ -8,6 +8,9 @@
 .table-style th,
 .table-style td {
     border: 1px solid black;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
     /*padding: 12px;*/
 }
 
