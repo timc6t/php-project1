@@ -3,25 +3,16 @@
  * User Registration Script
  * 
  * This script handles the user registration process. It allows an administrator to create a
- * new user by providing their email, name, password, and role. The password is intended to
- * be hashed before storage (though currently the password is not hashed in this version).
- * After the user is registered, their details are displayed, including the user ID, email,
- * name, and role.
+ * new user by providing their email, name, password, and role. After the user is registered,
+ * their details are displayed, including the user ID, email, name, and role.
  * 
  * The form submits the user data via POST, and the backend inserts the new user's data into
  * the 'users' table in the database. If the registration is successful, the newly registered
  * user's details are displayed.
  * 
- * @throws PDOException If there is an error connecting to the database or executing the
- *                      queries.
- * 
- * @global PDO    $db          The database connection object.
- * @global string $dsn         The Data Source Name for the database connection.
- * @global string $user        The database username.
- * @global string $db_password The database password.
- * @global array  $new_user    The details of the newly registered user after successful 
- *                             registration.
+ * @throws PDOException If there is an error connecting to the database or executing the query.
  */
+
 require_once 'db_config.php';
 session_start();
 

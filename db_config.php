@@ -97,19 +97,20 @@ function check_user($email, $password){
 }
 
 /**
- * Función para registrar un nuevo usuario en la base de datos.
+ * Registers a new user in the database.
  * 
- * Esta función recibe los datos del usuario (email, nombre, contraseña y rol), los inserta en la base de datos
- * y devuelve los detalles del nuevo usuario.
+ * This function receives user data (email, name, password, and role), inserts it into the
+ * database, and returns the details of the newly registered user.
  * 
- * @param string $email    El correo electrónico del nuevo usuario.
- * @param string $name     El nombre del nuevo usuario.
- * @param string $password La contraseña del nuevo usuario (aún no cifrada en esta versión).
- * @param int    $role     El rol del nuevo usuario (0=empleado, 1=gerente, 2=soporte).
+ * @param string $email    The email of the new user.
+ * @param string $name     The name of the new user.
+ * @param string $password The password of the new user (not hashed in this version).
+ * @param int    $role     The role of the new user (0=employee, 1=manager, 2=IT support).
  * 
- * @return array Los detalles del nuevo usuario después de ser registrado.
+ * @return array|null The details of the newly registered user, or null if an error occurs.
  * 
- * @throws PDOException Si ocurre un error al conectar con la base de datos o al ejecutar la consulta.
+ * @throws PDOException If there is an error connecting to the database or executing the
+ * 						query.
  */
 function register_user($email, $name, $password, $role) {
     try {
