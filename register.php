@@ -33,26 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Añadir la siguiente línea más tarde
     // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $hashed_password = $password; // Eliminar más tarde
-        
-    try {
-        list($dsn, $user, $db_password) = load_config(
-            dirname(__FILE__) . "/configuration.xml",
-            dirname(__FILE__) . "/configuration.xsd"
-        );
+    // $hashed_password = $password;  Eliminar más tarde
 
-        $db = new PDO($dsn, $user);
-        $prepared = $db -> prepare("INSERT INTO users (email, name, user_password, user_role) VALUES (?, ?, ?, ?)");
-        $prepared -> execute([$email, $name, $hashed_password, $role]);
-
-        $new_user_id = $db -> lastInsertId();
-
-        $stmt = $db -> prepare("SELECT * FROM users WHERE user_id = ?");
-        $stmt -> execute([$new_user_id]);
-        $new_user = $stmt -> fetch(PDO::FETCH_ASSOC);
-    } catch(PDOException $e) {
-        echo "<p style = 'color: red;'>Error: " . $e -> getMessage() . "</p>";
-    }
+    $new_user = register_user($email, $name, $password, $role);
 }
 ?>
 

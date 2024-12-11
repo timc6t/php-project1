@@ -1,4 +1,10 @@
 <?php
+/**
+ * db_config.php
+ * 
+ * This file contains the database configuration and functions related to the connection.
+ * It will be included in other files in order to do database operations.
+ */
 require_once 'fpdf/fpdf.php';
 
 /**
@@ -88,6 +94,49 @@ function check_user($email, $password){
 		echo "User not found with that email";
 	}
 	return FALSE;*/
+}
+
+/**
+ * Función para registrar un nuevo usuario en la base de datos.
+ * 
+ * Esta función recibe los datos del usuario (email, nombre, contraseña y rol), los inserta en la base de datos
+ * y devuelve los detalles del nuevo usuario.
+ * 
+ * @param string $email    El correo electrónico del nuevo usuario.
+ * @param string $name     El nombre del nuevo usuario.
+ * @param string $password La contraseña del nuevo usuario (aún no cifrada en esta versión).
+ * @param int    $role     El rol del nuevo usuario (0=empleado, 1=gerente, 2=soporte).
+ * 
+ * @return array Los detalles del nuevo usuario después de ser registrado.
+ * 
+ * @throws PDOException Si ocurre un error al conectar con la base de datos o al ejecutar la consulta.
+ */
+function register_user($email, $name, $password, $role) {
+    try {
+        $res = load_config(
+			dirname(__FILE__)."/configuration.xml",
+			dirname(__FILE__)."/configuration.xsd"
+		);
+		$db = new PDO($res[0], $res[1], $res[2]);
+
+        // Cifrar la contraseña antes de almacenarla (descomentar más tarde)
+        // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $hashed_password = $password; // Eliminar después
+
+        $prepared = $db->prepare("INSERT INTO users (email, name, user_password, user_role) VALUES (?, ?, ?, ?)");
+        $prepared->execute([$email, $name, $hashed_password, $role]);
+
+        $new_user_id = $db->lastInsertId();
+
+        $stmt = $db->prepare("SELECT * FROM users WHERE user_id = ?");
+        $stmt->execute([$new_user_id]);
+        $new_user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $new_user;
+
+    } catch (PDOException $e) {
+        echo "<p style='color: red;'>Error: " . $e->getMessage() . "</p>";
+    }
 }
 
 /**
