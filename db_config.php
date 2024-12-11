@@ -1,7 +1,5 @@
 <?php
-/*if (session_start() === PHP_SESSION_NONE) {
-	session_start();
-}*/
+require_once 'fpdf/fpdf.php';
 
 function load_config($name, $schema){
 	$config = new DOMDocument();
@@ -174,12 +172,6 @@ function getStatusReports() {
 			$amount = $report['amount'];
 			$status = $report['status'];
 			$created = $report['created_at'];
-			$date = DateTime::createFromFormat('Y-m-d H:i:s', $created);
-			if ($date) {
-				$formatted_created = $date -> format('d-m-Y H:i');
-			} else {
-				$formatted_created = $created;
-			}
 			
 			$output .=  "<tr>
 							<td>$name</td>
@@ -198,12 +190,79 @@ function getStatusReports() {
 									<button type='submit' name='update_status'>Update</button>
 								</form>
 							</td>
-							<td>$formatted_created</td>
+							<td>$created</td>
 						</tr>";
 		}
 		return $output;
 	} catch (PDOException $e) { 
 		echo 'Database error: ' . $e -> getMessage(); 
+	}
+}
+
+function generatePDF($expenses) {
+	class PDF extends FPDF {
+		function Header() {
+			$this -> SetFont('Arial', 'B', 14);
+			$this -> Cell(0, 10, 'Expense reports', 0, 1, 'C');
+			$this -> Ln(10);
+		}
+
+		function Footer() {
+			$this -> SetY(-15);
+			$this -> SetFont('Arial', 'I', 7);
+			$this -> Cell(0, 10, 'Page '. $this -> PageNo(), 0, 0, 'C');
+		}
+	}
+
+	$pdf = new PDF('L', 'mm', 'A4');
+	$pdf -> SetAutoPageBreak(true, 10);
+	$pdf -> AddPage();
+	$pdf -> SetFont('Arial', 'B', 11);
+
+	$pdf -> Cell(40, 7, 'Employee', 1);
+	$pdf -> Cell(60, 7, 'Category', 1);
+	$pdf -> Cell(60, 7, 'Description', 1);
+	$pdf -> Cell(23, 7, 'Amount', 1);
+	$pdf -> Cell(25, 7, 'Report date', 1);
+	$pdf -> Cell(20, 7, 'Status', 1);
+	$pdf -> Cell(35, 7, 'Created at', 1);
+	$pdf -> Ln();
+
+	$pdf -> SetFont('Arial', '', 10);
+
+	foreach ($expenses as $expense) {
+		$pdf -> Cell(40, 7, $expense['employee_name'], 1);
+		$pdf -> Cell(60, 7, $expense['category'], 1);
+		$pdf -> Cell(60, 7, $expense['description'], 1);
+		$pdf -> Cell(23, 7, number_format($expense['amount']), 1);
+		$pdf -> Cell(25, 7, $expense['report_date'], 1);
+		$pdf -> Cell(20, 7, ucfirst($expense['status']), 1);
+		$pdf -> Cell(35, 7, $expense['created_at'], 1);
+		$pdf -> Ln();
+	}
+
+	$pdf -> Output('D', 'expense_reports.pdf');
+	exit;
+}
+
+function fetchExpenses() {
+	try {
+		$res = load_config(
+			dirname(__FILE__)."/configuration.xml",
+			dirname(__FILE__)."/configuration.xsd"
+		);
+		$db = new PDO($res[0], $res[1], $res[2]);
+
+		$prepared = $db -> prepare( "SELECT users.name AS employee_name, expenses.category, expenses.description, expenses.amount,
+											DATE_FORMAT(expenses.report_date, '%d-%m-%Y') AS report_date,
+											expenses.created_at, expenses.status
+											FROM expenses
+											JOIN users ON expenses.user_id = users.user_id");
+
+		$prepared -> execute();
+		return $prepared -> fetchAll(PDO::FETCH_ASSOC);
+	} catch (PDOException $e) {
+		throw new Exception("Database error: " . $e -> getMessage());
 	}
 }
 
