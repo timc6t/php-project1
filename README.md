@@ -16,17 +16,17 @@ The project will be about the management of the employees' expenses reports in a
 - Search information about turning into PDF the HTML tables.
 - Add option to send through email either as HTML or as a PDF file.
 - Project extensions that are to be added:
-    - E1. Encrypted user password:
+    - E1. Encrypted user password (MUST):
         - Store the user password using an encryption method. See functions password_hash and password_verify.
-    - E2. Deleting:
+    - E2. Deleting (MUST):
         - Allow normal users to delete pending approval requests.
-    - E3. Expense report:
+    - E3. Expense report (MUST):
         - Expense managers will be able to generate a reprot of the expenses made by an employee in a given date interval. The report will consist of a table detailing the expenses, the total number of expenses, and the total amount.
-    - E4. Report downloading:
+    - E4. Report downloading (MUST):
         - Allow managers to download the generated reports in PDF format.
-    - E5. Report sending by email:
+    - E5. Report sending by email (Maybe):
         - Allow managers to send the generated reports by email, either as HTML in the body or as a HTML/PDF attachment.
-    - E6. Testing:
+    - E6. Testing (Maybe):
         - Using Codeception, write acceptance tests for all the functionality.
-    - E7. PHPDocumentor:
+    - E7. PHPDocumentor (MUST):
         - Write DocBlocks for your files and functions and generate the HTML documentation files.
