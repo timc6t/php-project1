@@ -22,11 +22,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
     $role = $_POST['role'];
 
-    // Añadir la siguiente línea más tarde
-    // $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    // $hashed_password = $password;  Eliminar más tarde
+    if (empty($email) || empty($name) || empty($password)) {
+        echo "All fields are required.";
+        exit;
+    }
+    
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $new_user = register_user($email, $name, $password, $role);
+    $result = register_user($email, $name, $hashed_password, $role);
+
+    if (is_array($result)) {
+        $new_user = $result;
+    } else {
+        echo "Error: " . $result;
+    }
+
+    //$new_user = register_user($email, $name, $password, $role);
 }
 ?>
 
