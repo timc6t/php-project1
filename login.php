@@ -27,11 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user = $_POST['user'];
         } else {
             session_start();
-            // print_r($_SESSION['user']);
 
             $_SESSION['user'] = $usu;
-            // $_SESSION['user_id']['email'] = $usu['email'];
-            // var_dump(($_SESSION['user']['user_role']));
             
             switch ($_SESSION['user']['user_role']) {
                 case 2:
@@ -44,15 +41,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     header("Location: main.php");
                     exit;
             }
-
-            /*if ($_SESSION['user']['user_role'] == 2) {
-                header("Location: admin.php");
-            } elseif ($_SESSION['user']['user_role'] == 1) {
-                header("Location: manager_page.php");
-            } else {
-                header("Location: main.php");
-            }
-            exit;*/
         }
     } catch (PDOException $e) {
         echo 'Database error: ' . $e -> getMessage();
@@ -92,7 +80,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit">Login</button>
     </form>
-    <!-- There is a register.php file for entering new users but normal employees cannot access it -->
-    <!-- <p>No account yet? Click <a href='register.php'>here</a> in order to get your account.</p> -->
 </body>
 </html>
