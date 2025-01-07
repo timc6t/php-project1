@@ -33,8 +33,21 @@ if (isset($_GET['download_pdf'])) {
 		<?php require 'header.php'; ?>
 		<h1> Expense management </h1>
 		<?php echo "<h3>User: " . $_SESSION['user']['name'] . "</h3>"; ?>
-		<ul><a href="manage_reports.php">Manage all expense reports status</a></ul>
-		<ul><a href="generate_report.php">Generate an employee's expense report</a></ul>
+		<table class="table-style">
+			<tr>
+				<th>Employee</th>
+				<th>Category</th>
+				<th>Description</th>
+				<th>Report date</th>
+				<th>Amount</th>
+				<th>Status</th>
+				<th>Created at</th>
+			</tr>		
+			<?php echo getStatusReports(); ?>
+		</table>
+	<form method="GET" action="manager_page.php">
+		<button type="submit" name="download_pdf">Download expenses in PDF</button>
+	</form>
 		<br><a href="logout.php"> Logout <a>
 	</body>
 </html>

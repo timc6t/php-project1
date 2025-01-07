@@ -1,18 +1,4 @@
 <?php
-/**
- * User Registration Script
- * 
- * This script handles the user registration process. It allows an administrator to create a
- * new user by providing their email, name, password, and role. After the user is registered,
- * their details are displayed, including the user ID, email, name, and role.
- * 
- * The form submits the user data via POST, and the backend inserts the new user's data into
- * the 'users' table in the database. If the registration is successful, the newly registered
- * user's details are displayed.
- * 
- * @throws PDOException If there is an error connecting to the database or executing the query.
- */
-
 require_once 'db_config.php';
 session_start();
 
@@ -36,8 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "Error: " . $result;
     }
-
-    //$new_user = register_user($email, $name, $password, $role);
 }
 ?>
 

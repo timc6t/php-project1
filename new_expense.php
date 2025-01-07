@@ -1,16 +1,4 @@
 <?php
-/**
- * Handles the creation of a new expense report.
- * 
- * This script processes the submission of a new expense report by a logged-in user.
- * It requires the user to be logged in (session check). When the form is submitted via 
- * POST, it collects the category, description, amount, and report date from the form,
- * and then calls the `addExpense` function to add the expense to the database. 
- * If the submission is successful, a message is displayed. If any errors occur during
- * the process (e.g., database issues), an error message is shown.
- *
- * @throws PDOException If there is a database error while adding the expense.
- */
 require_once 'sessions.php';
 require 'db_config.php';
 check_session();

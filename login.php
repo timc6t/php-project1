@@ -1,21 +1,4 @@
 <?php
-/**
- * User login script
- * 
- * This script handles user login by checking the provided email and password against the
- * database. Upon successful login, it initiates a session to store user information and 
- * redirects the user to a different page based on their role. If the login fails,
- * appropriate error messages are displayed. 
- * 
- * The script works with the `check_user` function to validate user credentials and begins
- * the session upon successful authentication. Users are redirected to different pages
- * depending on their role: Admin, Manager, or Regular User (employee).
- * 
- * @throws PDOException If there is an error connecting to the database or executing the
- *                      query.
- * @throws InvalidArgumentException If the configuration file is invalid or cannot be loaded.
- */
-
 require_once 'db_config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

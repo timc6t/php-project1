@@ -15,6 +15,23 @@
 require 'sessions.php';
 require_once 'db_config.php';
 check_session();
+
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_expense'])) {
+    $expenseId = $_POST['expense_id'];
+    $userId = $_SESSION['user']['user_id'];
+
+    try {
+        $result = delete_expense($expenseId, $userId);
+
+        if ($result) {
+            echo "<p>Expense deleted successfully.</p>";
+        } else {
+            echo "<p>Failed to delete expense. Please try again.</p>";
+        }
+    } catch (Exception $e) {
+        echo "<p>Error: " . $e->getMessage() . "</p>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +66,7 @@ check_session();
             <th>Amount</th>
             <th>Status</th>
             <th>Created at</th>
+            <th>Actions</th>
         </tr>		
 		<?php echo getFilteredReports(); ?>
 	</table>
