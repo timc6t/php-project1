@@ -11,15 +11,6 @@ if (!isset($_SESSION['user'])) {
 		exit;
 	}
 }
-
-if (isset($_GET['download_pdf'])) {
-	try {
-		$expenses = fetchExpenses();
-		generatePDF($expenses);
-	} catch (Exception $e) {
-		echo $e -> getMessage();
-	}
-}
 ?>
 <!DOCTYPE html>
 <html>

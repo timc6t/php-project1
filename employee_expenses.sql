@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 07-01-2025 a las 17:30:50
+-- Tiempo de generación: 07-01-2025 a las 22:34:10
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -84,7 +84,8 @@ INSERT INTO `users` (`user_id`, `email`, `name`, `user_password`, `user_role`) V
 (4, 'jose.hierro@company.com', 'José del Hierro', '$2y$10$dAgqDhCJwS0tBJa34GRAFOnZeKeulD131s/JxObsFadWG1Jpxrywi', 0),
 (5, 'test2@it.company.com', 'Tester Dos', '$2y$10$yMXUB0oGqVUdnGZye.sdBOxHRHf/Sj/BjC7FH/96vRwNkbaLGWaea', 1),
 (6, 'timothy.casiano@company.com', 'Timothy Casiano', '$2y$10$4BcXEJ91KiTWTrikSgSSy.HvHcGlqMF7outEReXtg46PJTDC.7DKK', 2),
-(7, 'post_test@company.com', 'Poster', '$2y$10$PJrPBo3qoGjDQtHydxkojuE08oAkQ5IGtp5U/pHrFTi9ea3W0KLu.', 0);
+(7, 'post_test@company.com', 'Poster', '$2y$10$PJrPBo3qoGjDQtHydxkojuE08oAkQ5IGtp5U/pHrFTi9ea3W0KLu.', 0),
+(8, 'another_one@company.com', 'Another', '$2y$10$38jsGcjRe3G7P7Em.vPxT.ZH7KMzlqdFF.IyJy/i3lIARMGBp4OaG', 0);
 
 --
 -- Índices para tablas volcadas
@@ -117,7 +118,7 @@ ALTER TABLE `expenses`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restricciones para tablas volcadas

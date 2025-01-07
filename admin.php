@@ -1,18 +1,4 @@
 <?php
-/**
- * Admin page for managing user roles
- * 
- * This script allows administrators to manage the roles of employees, managers, and IT 
- * support. It first checks if the user is logged in and if their role is 'administrator'
- * (role 2). If not, they are redirected to a different page. It then provides functionality
- * for updating a user's role through a form and displays a table of users with their
- * respective roles. The script uses PDO for database interaction to fetch user details and
- * update their roles.
- * 
- * @throws PDOException             If there is an error connecting to the database or
- *                                  executing the query.
- * @throws InvalidArgumentException If there is an issue with loading the configuration file.
- */
 require_once 'db_config.php';
 session_start();
 if (!isset($_SESSION['user'])) {
