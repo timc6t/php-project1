@@ -83,7 +83,7 @@ INSERT INTO `users` (`user_id`, `email`, `name`, `user_password`, `user_role`) V
 (3, 'default_manager@company.com', 'Jane Doe', '$2y$10$0ABHX8a7ES.Xam5JLQjfwe5uKJXDSkRiE/XAyng5.JQ2KgTUqNA4u', 1),
 (4, 'jose.hierro@company.com', 'José del Hierro', '$2y$10$dAgqDhCJwS0tBJa34GRAFOnZeKeulD131s/JxObsFadWG1Jpxrywi', 0),
 (5, 'test2@it.company.com', 'Tester Dos', '$2y$10$yMXUB0oGqVUdnGZye.sdBOxHRHf/Sj/BjC7FH/96vRwNkbaLGWaea', 1),
-(6, 'timothy.casiano@company.com', 'Timothy Casiano', '$2y$10$4BcXEJ91KiTWTrikSgSSy.HvHcGlqMF7outEReXtg46PJTDC.7DKK', 2),
+(6, 'tim@company.com', 'Tim', '$2y$10$4BcXEJ91KiTWTrikSgSSy.HvHcGlqMF7outEReXtg46PJTDC.7DKK', 2),
 (7, 'post_test@company.com', 'Poster', '$2y$10$PJrPBo3qoGjDQtHydxkojuE08oAkQ5IGtp5U/pHrFTi9ea3W0KLu.', 0),
 (8, 'another_one@company.com', 'Another', '$2y$10$38jsGcjRe3G7P7Em.vPxT.ZH7KMzlqdFF.IyJy/i3lIARMGBp4OaG', 0);
 
